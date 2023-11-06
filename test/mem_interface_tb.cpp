@@ -1,4 +1,4 @@
-#include "Valu.h"
+#include "Vmem_interface.h"
 #include "verilated.h"
 #include "verilated_vcd_c.h"
 #include <random>
@@ -10,8 +10,8 @@ int main(int argc, char **argv) {
 
 	VerilatedVcdC *trace = new VerilatedVcdC;
 
-	Valu *alu = new Valu;
-	alu->trace(trace, 99);
+	Vmem_interface *mem_interface = new Vmem_interface;
+	mem_interface->trace(trace, 99);
 	trace->open("trace.vcd");
 	int tick_count = 0;
 
@@ -22,8 +22,8 @@ int main(int argc, char **argv) {
 	// while (!Verilated::gotFinish()) {
 	for (int i = 0; i < 1000; i ++) {
 		tick_count ++;
-		// clk = 0
-		alu->eval();
+		mem_interface->clk = 0;
+		mem_interface->eval();
 		trace->dump(10 * tick_count - 2);
 
 		uint32_t a = rand_int32(rand_eng);
@@ -33,14 +33,15 @@ int main(int argc, char **argv) {
 			b &= 0x1f;
 		}
 
-		// clk = 1
+		mem_interface->clk = 1;
+		mem_interface-
 		alu->a = a;
 		alu->b = b;
 		alu->op = op;
 		alu->eval();
 		trace->dump(10 * tick_count);
 
-		// clk = 0
+		mem_interface->clk = 0;
 		alu->eval();
 		trace->dump(10 * tick_count + 5);
 		trace->flush();
